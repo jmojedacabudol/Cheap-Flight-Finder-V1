@@ -9,7 +9,8 @@ from pprint import pprint
 
 dm = DataManager()
 fs = FlightSearch()
-flight_data = dm.get_data()
+flight_data = dm.get_flight_data()
+users_data = dm.get_users()
 nm = NotificationManager()
 
 ORIGIN_CITY_IATA = "LON"
@@ -18,7 +19,7 @@ for data in flight_data:
     if not data['iataCode']:
         iataCode = fs.find_iata(data['city'])
         object_id = data['id']
-        dm.update_date(object_id, iataCode)
+        dm.update_iataCode(object_id, iataCode)
 
 date_for_tomorrow = (datetime.now() + timedelta(days=1)).strftime("%d/%m/%Y")
 date_6_months = (datetime.now() + timedelta(days=6 * 30)).strftime("%d/%m/%Y")
@@ -40,5 +41,6 @@ for data in flight_data:
         if flight.stop_over > 0:
             message += f"\nFlight has {flight.stop_over} stop over, via {flight.via_city}."
 
-        print(message)
+        for user in users_data:
+            nm.send_emails(message.encode('utf-8'), user["email"])
 
