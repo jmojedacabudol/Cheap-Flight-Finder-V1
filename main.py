@@ -5,6 +5,7 @@ from data_manager import DataManager
 from flight_search import FlightSearch
 from datetime import datetime, timedelta
 from notification_manager import NotificationManager
+from pprint import pprint
 
 dm = DataManager()
 fs = FlightSearch()
@@ -29,9 +30,15 @@ for data in flight_data:
         date_for_tomorrow,
         date_6_months)
 
-    flight_price = flight.price
-    if flight_price < data['lowestPrice']:
+
+    if flight is None:
+      continue
+
+    if flight.price < data['lowestPrice']:
         message = f"Low price alert! Only £{flight.price} to fly from {flight.origin_city}-{flight.origin_airport}" \
                          f" to {flight.destination_city}-{flight.destination_airport} from {flight.out_date} to {flight.return_date}"
-        print(nm.create_notif(message))
+        if flight.stop_over > 0:
+            message += f"\nFlight has {flight.stop_over} stop over, via {flight.via_city}."
+
+        print(message)
 
